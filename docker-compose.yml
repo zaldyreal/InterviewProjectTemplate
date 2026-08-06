@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # Service for the ASP.NET Core application
+  web:
+    build:
+      context: ./InterviewProjectTemplate
+      dockerfile: Dockerfile
+    container_name: aspnetcore-container
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__MySQLConnectionString=Server=mysql-db;Port=3306;Database=moodtrackerdb;Uid=app;Pwd=password
+    ports:
+      - "8080:8080"  # Expose port 8080, the http port
+      - "8081:8081"  # Expose port 8081, the https port
+    depends_on:
+      - mysql-db    # Ensure MySQL service is up before starting the ASP.NET Core app
+    networks:
+      - aspnetcore-mysql-network
+
+  angular-app:
+    build:
+      context: ./Client/web-client
+      dockerfile: Dockerfile
+    container_name: angular-client
+    ports:
+      - "4200:80"
+    networks:
+      - aspnetcore-mysql-network
+
+  # Service for the MySQL database
+  mysql-db:
+    image: mysql:8.4.3  # Use 8.4.3 because support for mysql_native_password has been removed in 9.*
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: moodtrackerdb
+      MYSQL_USER: app
+      MYSQL_PASSWORD: password
+      MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
+    command: "--mysql-native-password=ON"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"   # Expose MySQL port 3306
+    networks:
+      - aspnetcore-mysql-network
+
+# Define the volume for MySQL data persistence
+volumes:
+  mysql-data:
+
+# Define the network to connect both services
+networks:
+  aspnetcore-mysql-network:
+    driver: bridge
+
