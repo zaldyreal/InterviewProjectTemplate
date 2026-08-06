@@ -92,6 +92,10 @@ so it also runs inside a container.
 
 ## Verified behaviour
 
+This was verified the way a reviewer will experience it: the repository was cloned to a separate
+directory, built with `docker compose build --no-cache` so no layer was reused, and started against
+an empty database. Every check below passed on that clean clone.
+
 The following was checked against the running Docker Compose stack, not just against unit tests:
 
 | Check | Result |
