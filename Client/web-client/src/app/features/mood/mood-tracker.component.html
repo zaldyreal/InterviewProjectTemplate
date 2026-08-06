@@ -1,0 +1,76 @@
+<section class="card">
+  @if (isLoading()) {
+    <p class="muted" role="status">Loading…</p>
+  } @else if (submittedEntry() || alreadySubmitted()) {
+    <!-- Already recorded today: show what was saved rather than a form that cannot be used. -->
+    <div class="recorded">
+      <h1>Thanks — your mood is recorded</h1>
+
+      @if (submittedEntry(); as entry) {
+        <p class="recorded__rating">{{ entry.ratingLabel }}</p>
+
+        @if (entry.comment) {
+          <blockquote class="recorded__comment">{{ entry.comment }}</blockquote>
+        }
+      }
+
+      @if (errorMessage()) {
+        <p class="alert alert--info" role="alert">{{ errorMessage() }}</p>
+      }
+
+      <p class="muted">You can record your mood again tomorrow.</p>
+    </div>
+  } @else {
+    <h1>How are you feeling today?</h1>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <fieldset class="options">
+        <legend class="options__legend">Choose the option that fits best</legend>
+
+        @for (option of options(); track option.value) {
+          <!--
+            A radio group rather than plain buttons: it is keyboard navigable and announced correctly
+            by screen readers, which a set of styled divs would not be.
+          -->
+          <label class="option" [class.option--selected]="form.controls.rating.value === option.value">
+            <input
+              type="radio"
+              name="rating"
+              class="option__input"
+              [value]="option.value"
+              [checked]="form.controls.rating.value === option.value"
+              (change)="selectRating(option.value)" />
+            <span class="option__label">{{ option.label }}</span>
+          </label>
+        }
+      </fieldset>
+
+      @if (form.controls.rating.touched && form.controls.rating.invalid) {
+        <p class="field-error" role="alert">Please choose how you are feeling.</p>
+      }
+
+      <label class="field">
+        <span class="field__label">
+          Anything you'd like to add? <span class="muted">(optional)</span>
+        </span>
+        <textarea
+          formControlName="comment"
+          class="field__input"
+          rows="3"
+          [maxlength]="commentMaxLength"
+          placeholder="Optional comment"></textarea>
+        <span class="field__hint">
+          {{ form.controls.comment.value.length }} / {{ commentMaxLength }}
+        </span>
+      </label>
+
+      @if (errorMessage()) {
+        <p class="alert" role="alert">{{ errorMessage() }}</p>
+      }
+
+      <button type="submit" class="button" [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Saving…' : 'Record my mood' }}
+      </button>
+    </form>
+  }
+</section>

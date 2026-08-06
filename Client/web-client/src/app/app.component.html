@@ -1,1 +1,26 @@
-<h1>Web Client is Running</h1>
+<div class="app-shell">
+  <header class="app-header">
+    <a class="app-header__brand" routerLink="/">
+      <span class="app-header__mark" aria-hidden="true">◕</span>
+      Mood Tracker
+    </a>
+
+    <nav class="app-header__nav">
+      @if (authService.isAuthenticated()) {
+        <a routerLink="/admin">Mood entries</a>
+        <span class="app-header__user">{{ authService.username() }}</span>
+        <button type="button" class="button button--ghost" (click)="signOut()">Sign out</button>
+      } @else {
+        <a routerLink="/admin/login">Admin</a>
+      }
+    </nav>
+  </header>
+
+  <main class="app-main">
+    <router-outlet />
+  </main>
+
+  <footer class="app-footer">
+    Built for the JAVLN take-home assignment.
+  </footer>
+</div>

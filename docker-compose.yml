@@ -1,7 +1,7 @@
-version: '3.8'
+# The `version` key is obsolete in Compose V2 and emits a warning, so it is omitted.
 
 services:
-  # Service for the ASP.NET Core application
+  # ASP.NET Core API
   web:
     build:
       context: ./InterviewProjectTemplate
@@ -9,15 +9,35 @@ services:
     container_name: aspnetcore-container
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
       - ConnectionStrings__MySQLConnectionString=Server=mysql-db;Port=3306;Database=moodtrackerdb;Uid=app;Pwd=password
+
+      # Admin credentials and the JWT signing key are supplied as environment variables rather than
+      # committed to appsettings.json. They are literal values here only because a reviewer must be
+      # able to run the stack with two commands and no setup; a real deployment would inject these
+      # from a secret store, and the README says so explicitly.
+      - AdminAuth__JwtSigningKey=local-development-signing-key-please-replace-in-production
+      - AdminAuth__SeedUsername=admin
+      - AdminAuth__SeedPassword=Admin123!
+
+      # The calendar day the once-per-day rule is evaluated against.
+      - MoodTracker__TimeZone=Australia/Melbourne
+
+      # The Angular container is served from a different origin, so it must be allowed explicitly:
+      # the identity cookie is credentialed, and browsers reject wildcard origins on those requests.
+      - Cors__AllowedOrigins__0=http://localhost:4200
     ports:
-      - "8080:8080"  # Expose port 8080, the http port
-      - "8081:8081"  # Expose port 8081, the https port
+      - "8080:8080"
     depends_on:
-      - mysql-db    # Ensure MySQL service is up before starting the ASP.NET Core app
+      mysql-db:
+        # Waits for MySQL to accept connections, not merely for the container to exist. `depends_on`
+        # alone only guarantees the latter, which is why the API also retries on startup.
+        condition: service_healthy
     networks:
       - aspnetcore-mysql-network
+    restart: unless-stopped
 
+  # Angular single-page app, served by nginx
   angular-app:
     build:
       context: ./Client/web-client
@@ -25,33 +45,40 @@ services:
     container_name: angular-client
     ports:
       - "4200:80"
+    depends_on:
+      - web
     networks:
       - aspnetcore-mysql-network
+    restart: unless-stopped
 
-  # Service for the MySQL database
+  # MySQL database
   mysql-db:
-    image: mysql:8.4.3  # Use 8.4.3 because support for mysql_native_password has been removed in 9.*
+    image: mysql:8.4.3  # 8.4.x because support for mysql_native_password was removed in 9.x
     container_name: mysql-container
     environment:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: moodtrackerdb
       MYSQL_USER: app
       MYSQL_PASSWORD: password
-      MYSQL_AUTHENTICATION_PLUGIN: mysql_native_password
     command: "--mysql-native-password=ON"
     volumes:
       - mysql-data:/var/lib/mysql
     ports:
-      - "3306:3306"   # Expose MySQL port 3306
+      - "3306:3306"  # Exposed so the database can be inspected from the host during review
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-ppassword"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
     networks:
       - aspnetcore-mysql-network
+    restart: unless-stopped
 
-# Define the volume for MySQL data persistence
 volumes:
+  # Named volume so mood entries survive `docker compose down`. Use `down -v` to start clean.
   mysql-data:
 
-# Define the network to connect both services
 networks:
   aspnetcore-mysql-network:
     driver: bridge
-

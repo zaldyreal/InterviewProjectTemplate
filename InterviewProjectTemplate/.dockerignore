@@ -1,0 +1,7 @@
+# Keeps host build output out of the image; the build inside the container produces its own.
+bin
+obj
+.vs
+.vscode
+*.user
+*.log

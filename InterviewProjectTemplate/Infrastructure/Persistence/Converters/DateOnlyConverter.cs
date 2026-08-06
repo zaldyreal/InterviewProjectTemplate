@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace InterviewProjectTemplate.Infrastructure.Persistence.Converters

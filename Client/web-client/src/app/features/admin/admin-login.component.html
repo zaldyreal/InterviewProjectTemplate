@@ -1,0 +1,46 @@
+<section class="card card--narrow">
+  <h1>Admin sign in</h1>
+  <p class="muted">Sign in to view all recorded mood entries.</p>
+
+  @if (sessionExpired()) {
+    <p class="alert alert--info" role="status">
+      Your session has expired. Please sign in again.
+    </p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <label class="field">
+      <span class="field__label">Username</span>
+      <input
+        type="text"
+        formControlName="username"
+        class="field__input"
+        autocomplete="username"
+        autocapitalize="none"
+        spellcheck="false" />
+      @if (form.controls.username.touched && form.controls.username.invalid) {
+        <span class="field-error" role="alert">Username is required.</span>
+      }
+    </label>
+
+    <label class="field">
+      <span class="field__label">Password</span>
+      <input
+        type="password"
+        formControlName="password"
+        class="field__input"
+        autocomplete="current-password" />
+      @if (form.controls.password.touched && form.controls.password.invalid) {
+        <span class="field-error" role="alert">Password is required.</span>
+      }
+    </label>
+
+    @if (errorMessage()) {
+      <p class="alert" role="alert">{{ errorMessage() }}</p>
+    }
+
+    <button type="submit" class="button" [disabled]="isSubmitting()">
+      {{ isSubmitting() ? 'Signing in…' : 'Sign in' }}
+    </button>
+  </form>
+</section>

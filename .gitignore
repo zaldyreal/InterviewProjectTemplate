@@ -361,3 +361,15 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# ---- Angular / Node ------------------------------------------------------------------------
+# node_modules is already covered above; these are the Angular CLI's outputs.
+dist/
+.angular/
+out-tsc/
+coverage/
+npm-debug.log*
+yarn-error.log*
+
+# NOTE: .config/dotnet-tools.json is committed deliberately — it pins the dotnet-ef version so
+# `dotnet tool restore` gives everyone the same migration tooling.

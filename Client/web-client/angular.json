@@ -15,11 +15,11 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": "dist/web-client",
             "index": "src/index.html",
-            "main": "src/main.ts",
+            "browser": "src/main.ts",
             "polyfills": [
               "zone.js"
             ],
@@ -50,19 +50,16 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "6kb",
+                  "maximumError": "12kb"
                 }
               ],
               "outputHashing": "all"
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
-              "sourceMap": true,
-              "namedChunks": true
+              "sourceMap": true
             }
           },
           "defaultConfiguration": "production"
@@ -71,10 +68,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "web-client:build:production"
+              "buildTarget": "web-client:build:production"
             },
             "development": {
-              "browserTarget": "web-client:build:development"
+              "buildTarget": "web-client:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -82,7 +79,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "web-client:build"
+            "buildTarget": "web-client:build"
           }
         },
         "test": {
@@ -94,6 +91,7 @@
             ],
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
+            "karmaConfig": "karma.conf.js",
             "assets": [
               "src/favicon.ico",
               "src/assets"
@@ -106,5 +104,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

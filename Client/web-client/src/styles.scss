@@ -1,1 +1,217 @@
-/* You can add global styles to this file, and also import other style files */
+/*
+ * Global styles and design tokens.
+ *
+ * Colours are declared as custom properties with a dark-scheme override so the app follows the
+ * viewer's OS preference. Keeping them as tokens means a component never hardcodes a hex value that
+ * would then need changing in two themes.
+ */
+
+:root {
+  --colour-background: #f6f7f9;
+  --colour-surface: #ffffff;
+  --colour-surface-sunken: #f1f3f6;
+  --colour-border: #dfe3e8;
+  --colour-text: #1c2430;
+  --colour-text-muted: #6b7684;
+  --colour-accent: #2f6fb8;
+  --colour-accent-hover: #26598f;
+  --colour-accent-soft: #eaf1fa;
+  --colour-danger: #b23636;
+  --colour-danger-soft: #fdecec;
+  --colour-danger-border: #f0bcbc;
+
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --colour-background: #14181e;
+    --colour-surface: #1c222b;
+    --colour-surface-sunken: #232a34;
+    --colour-border: #333c48;
+    --colour-text: #e6eaef;
+    --colour-text-muted: #9aa5b3;
+    --colour-accent: #6ea8e8;
+    --colour-accent-hover: #8bbcf0;
+    --colour-accent-soft: #1e2c3d;
+    --colour-danger: #e88989;
+    --colour-danger-soft: #3a1c1c;
+    --colour-danger-border: #6b3232;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--colour-background);
+  color: var(--colour-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1 {
+  font-size: 1.5rem;
+  line-height: 1.3;
+  margin: 0 0 0.5rem;
+}
+
+a {
+  color: var(--colour-accent);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.muted {
+  color: var(--colour-text-muted);
+}
+
+/* Available to keyboard and screen-reader users while hidden visually. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* A visible focus ring is kept everywhere; removing it breaks keyboard navigation. */
+:focus-visible {
+  outline: 2px solid var(--colour-accent);
+  outline-offset: 2px;
+}
+
+/* ---- Layout ------------------------------------------------------------------------------- */
+
+.card {
+  background-color: var(--colour-surface);
+  border: 1px solid var(--colour-border);
+  border-radius: 0.875rem;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 34rem;
+  margin: 0 auto;
+
+  &--narrow {
+    max-width: 24rem;
+  }
+
+  &--wide {
+    max-width: 64rem;
+  }
+}
+
+/* ---- Forms -------------------------------------------------------------------------------- */
+
+.field {
+  display: block;
+  margin-bottom: 1.25rem;
+}
+
+.field__label {
+  display: block;
+  margin-bottom: 0.375rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+
+.field__input {
+  display: block;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  font: inherit;
+  color: var(--colour-text);
+  background-color: var(--colour-surface);
+  border: 1px solid var(--colour-border);
+  border-radius: 0.5rem;
+  resize: vertical;
+
+  &:focus {
+    border-color: var(--colour-accent);
+  }
+}
+
+.field__hint {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+  color: var(--colour-text-muted);
+  text-align: right;
+}
+
+.field-error {
+  display: block;
+  margin: 0.375rem 0 0;
+  font-size: 0.875rem;
+  color: var(--colour-danger);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6875rem 1.25rem;
+  font: inherit;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: var(--colour-accent);
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background-color: var(--colour-accent-hover);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &--ghost {
+    color: var(--colour-text);
+    background-color: transparent;
+    border-color: var(--colour-border);
+
+    &:hover:not(:disabled) {
+      background-color: var(--colour-surface-sunken);
+    }
+  }
+}
+
+/* ---- Messages ----------------------------------------------------------------------------- */
+
+.alert {
+  margin: 0 0 1.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
+  color: var(--colour-danger);
+  background-color: var(--colour-danger-soft);
+  border: 1px solid var(--colour-danger-border);
+
+  /* Not an error — an expected outcome, such as having already submitted today. */
+  &--info {
+    color: var(--colour-accent);
+    background-color: var(--colour-accent-soft);
+    border-color: var(--colour-accent);
+  }
+}

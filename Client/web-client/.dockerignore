@@ -1,0 +1,9 @@
+# Keeps the build context small and stops a host-built node_modules (with native binaries compiled
+# for Windows) from being copied into a Linux image.
+node_modules
+dist
+.angular
+coverage
+out-tsc
+.vscode
+*.log

@@ -1,0 +1,101 @@
+<section class="card card--wide">
+  <header class="page-header">
+    <div>
+      <h1>Mood entries</h1>
+      <p class="muted">
+        All entries logged in the system, most recent first.
+        @if (totalCount() > 0) {
+          <strong>{{ totalCount() }}</strong> total.
+        }
+      </p>
+    </div>
+  </header>
+
+  @if (isLoading()) {
+    <p class="muted" role="status">Loading entries…</p>
+  } @else if (errorMessage()) {
+    <p class="alert" role="alert">{{ errorMessage() }}</p>
+  } @else if (entries().length === 0) {
+    <p class="empty">No moods have been recorded yet.</p>
+  } @else {
+    @if (summary().length > 0) {
+      <ul class="summary" aria-label="Mood breakdown for this page">
+        @for (item of summary(); track item.label) {
+          <li class="summary__item">
+            <span class="summary__count">{{ item.count }}</span>
+            <span class="summary__label">{{ item.label }}</span>
+          </li>
+        }
+      </ul>
+      <p class="muted summary__caveat">Breakdown covers the entries shown on this page.</p>
+    }
+
+    <!-- Scrolls inside its own container so a narrow viewport never scrolls the whole page. -->
+    <div class="table-scroll">
+      <table class="table">
+        <caption class="visually-hidden">
+          Mood entries, most recent first
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Recorded</th>
+            <th scope="col">Mood</th>
+            <th scope="col">Comment</th>
+            <th scope="col">User</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (entry of entries(); track entry.id) {
+            <tr>
+              <td class="table__date">
+                <span>{{ entry.moodDate | date: 'd MMM y' }}</span>
+                <span class="muted table__time">
+                  {{ entry.createdAtUtc | date: 'HH:mm' : 'UTC' }} UTC
+                </span>
+              </td>
+              <td>
+                <span class="pill" [class]="ratingClass(entry.rating)">
+                  {{ entry.ratingLabel }}
+                </span>
+              </td>
+              <td class="table__comment">
+                @if (entry.comment) {
+                  {{ entry.comment }}
+                } @else {
+                  <span class="muted">—</span>
+                }
+              </td>
+              <!--
+                A pseudonymous reference rather than the raw cookie value: an admin can see that two
+                entries came from the same person without being handed a usable identity token.
+              -->
+              <td><code class="user-ref">{{ entry.userReference }}</code></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPages() > 1) {
+      <nav class="pager" aria-label="Pagination">
+        <button
+          type="button"
+          class="button button--ghost"
+          [disabled]="!hasPreviousPage()"
+          (click)="goToPage(page() - 1)">
+          Previous
+        </button>
+
+        <span class="pager__status">Page {{ page() }} of {{ totalPages() }}</span>
+
+        <button
+          type="button"
+          class="button button--ghost"
+          [disabled]="!hasNextPage()"
+          (click)="goToPage(page() + 1)">
+          Next
+        </button>
+      </nav>
+    }
+  }
+</section>
